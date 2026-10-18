@@ -55,9 +55,14 @@
 
     // ---- surface impression (canvas is persistent; main.js moves it in)
     h.push(`<section class="sec surface"><h2>View from the surface</h2>
-      <div id="surfSlot" class="surfslot"></div>
-      <p class="lede surfcap" id="surfCaption"></p>
-      <p class="fine">An artist's-impression scene computed from this planet's model: sky colour from Rayleigh scattering of the star's light by this atmosphere (or its hazes and clouds), the star at its true angular size, terrain from its climate state.</p>
+      <div class="surfwrap">
+        <figure class="polaroid"><div id="surfSlot" class="surfslot"></div><figcaption class="pol-label" id="polLabel">${esc(p.name)}</figcaption></figure>
+        <div class="surftext">
+          <p class="lede surfcap" id="surfCaption"></p>
+          <button type="button" class="ghost" id="savePostcard">Save as image</button>
+          <p class="fine">An artist's-impression scene computed from this planet's model: sky colour from Rayleigh scattering of the star's light by this atmosphere (or its hazes and clouds), the star at its true angular size, terrain from its climate state.</p>
+        </div>
+      </div>
     </section>`);
 
     // ---- star

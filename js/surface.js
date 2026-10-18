@@ -55,6 +55,10 @@
     const locked = p.locked && p.spinState === 'synchronous';
     if (locked) elev = (s === 'lava' || s === 'hot-rock' || p.Teq > 900) ? 50 : (p.surfaceLiquid ? 32 : 14);
     if (envelope) elev = 16;
+    // square frame, ~76° field of view; tilt the camera up just enough to keep the star in view
+    sc.k = Math.tan(38 * deg);
+    sc.pitch = Math.max(7, elev - 21) * deg;
+    sc.label = locked ? (elev > 40 ? 'eternal noon' : 'endless afternoon') : 'afternoon';
     sc.sunDir = [Math.sin(az * deg) * Math.cos(elev * deg), Math.sin(elev * deg), Math.cos(az * deg) * Math.cos(elev * deg)];
 
     // ---- per-state ground and special skies
@@ -133,6 +137,7 @@ uniform vec3 uZen; uniform vec3 uHor; uniform vec3 uSunDir; uniform vec3 uSunCol
 uniform float uSunSize; uniform float uSunBright; uniform float uSunVis; uniform float uStars; uniform float uFog; uniform float uCloud;
 uniform vec3 uCloudCol; uniform vec3 uG0; uniform vec3 uG1; uniform vec3 uG2; uniform vec3 uG3;
 uniform vec3 uGlowCol; uniform float uGlowAmt; uniform float uMtn; uniform vec3 uSeed; uniform float uCamH;
+uniform float uPitch; uniform float uK;
 uniform float uHasRing; uniform float uRingIn; uniform float uRingOut; uniform float uRingOp; uniform vec3 uRingCol;
 
 vec3 mod289(vec3 x){return x - floor(x*(1.0/289.0))*289.0;}
@@ -160,7 +165,7 @@ float snoise(vec3 v){
 }
 float fbm4(vec3 p){ float a=0.5, s=0.0; for(int i=0;i<4;i++){ s+=a*snoise(p); p=p*2.03+vec3(1.7,9.2,3.1); a*=0.5; } return s; }
 float fbm6(vec3 p){ float a=0.5, s=0.0; for(int i=0;i<6;i++){ s+=a*snoise(p); p=p*2.01+vec3(5.3,1.1,7.7); a*=0.5; } return s; }
-float hash1(vec2 p){ return fract(sin(dot(p, vec2(12.9898,78.233)))*43758.5453); }
+float hash1(vec2 p){ vec3 p3 = fract(vec3(p.xyx) * 0.1031); p3 += dot(p3, p3.yzx + 33.33); return fract((p3.x + p3.y) * p3.z); }
 
 vec3 skyCol(vec3 rd){
   float h = max(rd.y, 0.0);
@@ -173,7 +178,7 @@ vec3 skyCol(vec3 rd){
   float disk = smoothstep(uSunSize, uSunSize*0.86, ang);
   float limb = 1.0 - 0.4*(1.0 - sqrt(max(0.0, 1.0 - pow(ang/uSunSize, 2.0))));
   col += uSunCol * disk * limb * uSunBright * uSunVis;
-  col += uSunCol * exp(-ang/(uSunSize*2.5 + 0.006)) * 0.7 * uSunVis;
+  col += uSunCol * exp(-ang/(uSunSize*2.5 + 0.006)) * (0.15 + 0.55*min(haze*3.0, 1.0)) * uSunVis;
   return col;
 }
 
@@ -189,7 +194,8 @@ vec3 groundLit(vec3 alb, vec3 n){
 
 void main(){
   vec2 uv = (gl_FragCoord.xy - 0.5*uRes) / uRes.y;
-  vec3 rd = normalize(vec3(uv.x*1.15, uv.y*1.15 + 0.12, 1.0));
+  float cp = cos(uPitch), sp = sin(uPitch);
+  vec3 rd = normalize(vec3(0.0, sp, cp) + (vec3(uv.x, 0.0, 0.0) + uv.y*vec3(0.0, cp, -sp)) * 2.0 * uK);
   vec3 col;
   float az = atan(rd.x, rd.z);
 
@@ -355,7 +361,7 @@ void main(){
       gl.enableVertexAttribArray(loc);
       gl.vertexAttribPointer(loc, 2, gl.FLOAT, false, 0, 0);
       this.u = {};
-      for (const nme of ['uRes', 'uTime', 'uMode', 'uZen', 'uHor', 'uSunDir', 'uSunCol', 'uSunSize', 'uSunBright', 'uSunVis', 'uStars', 'uFog', 'uCloud', 'uCloudCol', 'uG0', 'uG1', 'uG2', 'uG3', 'uGlowCol', 'uGlowAmt', 'uMtn', 'uSeed', 'uCamH', 'uHasRing', 'uRingIn', 'uRingOut', 'uRingOp', 'uRingCol'])
+      for (const nme of ['uRes', 'uTime', 'uMode', 'uZen', 'uHor', 'uSunDir', 'uSunCol', 'uSunSize', 'uSunBright', 'uSunVis', 'uStars', 'uFog', 'uCloud', 'uCloudCol', 'uG0', 'uG1', 'uG2', 'uG3', 'uGlowCol', 'uGlowAmt', 'uMtn', 'uSeed', 'uCamH', 'uPitch', 'uK', 'uHasRing', 'uRingIn', 'uRingOut', 'uRingOp', 'uRingCol'])
         this.u[nme] = gl.getUniformLocation(prog, nme);
       this.visible = true; this.running = false; this.last = 0;
       this.scale = Math.min(window.devicePixelRatio || 1, 1.25);
@@ -374,7 +380,7 @@ void main(){
       gl.uniform3fv(u.uCloudCol, lin(sc.cloudCol));
       ['uG0', 'uG1', 'uG2', 'uG3'].forEach((k, i) => gl.uniform3fv(u[k], lin(sc.g[i])));
       gl.uniform3fv(u.uGlowCol, lin(sc.glowCol)); gl.uniform1f(u.uGlowAmt, sc.glowAmt);
-      gl.uniform1f(u.uMtn, sc.mtn); gl.uniform3fv(u.uSeed, sc.seed); gl.uniform1f(u.uCamH, sc.camH);
+      gl.uniform1f(u.uMtn, sc.mtn); gl.uniform3fv(u.uSeed, sc.seed); gl.uniform1f(u.uCamH, sc.camH); gl.uniform1f(u.uPitch, sc.pitch); gl.uniform1f(u.uK, sc.k);
       gl.uniform1f(u.uHasRing, sc.ring ? 1 : 0); gl.uniform1f(u.uRingIn, sc.ringIn); gl.uniform1f(u.uRingOut, sc.ringOut);
       gl.uniform1f(u.uRingOp, sc.ringOp); gl.uniform3fv(u.uRingCol, lin(sc.ringCol));
       this.t0 = performance.now();
@@ -387,6 +393,15 @@ void main(){
       // ~12 fps is plenty for drifting clouds and waves
       if (this.visible && !document.hidden && now - this.last > 80) { this.last = now; this.render(now); }
       requestAnimationFrame(this._raf);
+    }
+    // render once at a fixed square size (for saving images); the next frame restores the display size
+    renderSize(px, now) {
+      const gl = this.gl, c = this.canvas;
+      c.width = px; c.height = px;
+      gl.viewport(0, 0, px, px);
+      gl.uniform2f(this.u.uRes, px, px);
+      gl.uniform1f(this.u.uTime, (now - this.t0) / 1000);
+      gl.drawArrays(gl.TRIANGLE_STRIP, 0, 4);
     }
     render(now) {
       const gl = this.gl, c = this.canvas;

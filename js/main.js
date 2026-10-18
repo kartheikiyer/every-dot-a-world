@@ -51,6 +51,8 @@
       const scene = EXO.makeSurfaceScene(sys.planet, sys.star);
       surf.setScene(scene);
       document.getElementById('surfCaption').textContent = scene.caption;
+      document.getElementById('polLabel').innerHTML = `${escHtml(sys.planet.name)}<small>${scene.label}</small>`;
+      document.getElementById('savePostcard').onclick = () => savePostcard(scene);
     } else if (slot) {
       slot.innerHTML = '<p class="glfail">WebGL is unavailable, so the surface view can\'t be drawn.</p>';
     }
@@ -77,6 +79,30 @@
     EXO.ui.drawSpectrum(sys, specMode, state.d);
   }
 
+  function escHtml(s) { return String(s).replace(/[&<>"]/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c])); }
+  async function savePostcard(scene) {
+    try { await document.fonts.load('600 64px Caveat'); } catch { /* fallback font */ }
+    const W = 1200, pad = 56, img = W - pad * 2, H = pad + img + 210;
+    surf.renderSize(img, performance.now());
+    const c = document.createElement('canvas'); c.width = W; c.height = H;
+    const g = c.getContext('2d');
+    g.fillStyle = '#f3efe7'; g.fillRect(0, 0, W, H);
+    g.drawImage(surfCanvas, pad, pad, img, img);
+    g.fillStyle = '#2a2a35'; g.textAlign = 'center';
+    g.font = '600 76px Caveat, "Segoe Print", cursive';
+    g.fillText(sys.planet.name, W / 2, pad + img + 100);
+    g.fillStyle = '#5a5a66'; g.font = '400 48px Caveat, "Segoe Print", cursive';
+    g.fillText(`${scene.label} \u2014 Every Dot a World`, W / 2, pad + img + 160);
+    c.toBlob((blob) => {
+      if (!blob) { toast('Could not create the image in this browser.'); return; }
+      const a = document.createElement('a');
+      a.href = URL.createObjectURL(blob);
+      a.download = `${sys.planet.name.replace(/[^A-Za-z0-9+-]+/g, '-')}-surface.png`;
+      document.body.appendChild(a); a.click(); a.remove();
+      setTimeout(() => URL.revokeObjectURL(a.href), 2000);
+      toast('Image saved');
+    }, 'image/png');
+  }
   function toast(msg) {
     const t = document.getElementById('toast');
     t.textContent = msg; t.hidden = false;
