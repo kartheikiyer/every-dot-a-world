@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Every Dot a World</title>
+<meta name="theme-color" content="#0d1530">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta property="og:title" content="Every Dot a World">
+<meta property="og:description" content="Generate a physically consistent exoplanet: see it turn, stand on its surface, and find out which telescopes could detect it.">
+<meta property="og:type" content="website">
+<meta name="description" content="Generate physically consistent exoplanets with rotating procedural renders, full physical properties, habitability, real-world analogues and observability with current and future telescopes.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/style.css">
+</head>
+<body>
+<header class="topbar">
+  <a class="brand" href="./"><img src="icons/icon.svg" alt="" width="26" height="26">Every Dot a World</a>
+  <div class="controls">
+    <div class="seg" role="radiogroup" aria-label="Generation mode">
+      <button type="button" data-mode="interesting" role="radio">Interesting</button>
+      <button type="button" data-mode="realistic" role="radio">Realistic</button>
+    </div>
+    <form id="seedForm" class="seedform" autocomplete="off">
+      <label for="seedInput" class="sr">Seed</label>
+      <input id="seedInput" spellcheck="false" maxlength="24" placeholder="Seed">
+      <button type="submit" class="ghost">Load seed</button>
+    </form>
+    <button type="button" id="openGuide" class="ghost">Guide</button>
+    <button type="button" id="copyLink" class="ghost">Copy link</button>
+    <button type="button" id="newPlanet" class="primary">New planet</button>
+  </div>
+</header>
+
+<main class="layout">
+  <section class="viewer" aria-label="Planet view">
+    <div class="stage">
+      <canvas id="planet" aria-label="Rotating render of the generated planet"></canvas>
+      <p class="hint">Drag to orbit the camera; double-click to reset</p>
+      <p id="glfail" class="glfail" hidden>WebGL is unavailable in this browser, so the planet can't be drawn. All properties below are still computed.</p>
+    </div>
+    <div class="minis">
+      <figure>
+        <canvas id="hzStrip" height="86" aria-label="Orbit relative to the habitable zone"></canvas>
+        <figcaption>Orbit vs. habitable zone (log distance)</figcaption>
+      </figure>
+      <figure class="xsec">
+        <canvas id="xsection" width="150" height="150" aria-label="Interior cross-section"></canvas>
+        <figcaption id="xsecLegend"></figcaption>
+      </figure>
+    </div>
+  </section>
+
+  <section class="sheet" id="sheet" aria-live="polite"></section>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<div id="splash" class="splash" role="dialog" aria-modal="true" aria-labelledby="splashTitle" hidden>
+  <div class="splash-card">
+    <img src="icons/icon.svg" alt="" class="splash-icon" width="72" height="72">
+    <h1 id="splashTitle">Every Dot a World</h1>
+    <p class="splash-lede">Most of the stars you can see at night have planets. This site invents one at a time, using the same physics astronomers use to make sense of the 6,000-plus real exoplanets, and shows you what it would be like and whether we could ever see it.</p>
+    <ul class="splash-list">
+      <li><b>New planet</b> builds a fresh world. Every world has its own link, so you can share it or come back to it.</li>
+      <li><b>Drag the planet</b> to look around it, and scroll down for the view from its surface.</li>
+      <li><b>Why these values?</b> under each section explains the reasoning and the research behind every number.</li>
+      <li><b>Move the distance slider</b> to see which telescopes, today and in the coming decades, could detect it.</li>
+      <li><b>Interesting</b> mode favours rarer and more habitable worlds; <b>Realistic</b> shows what a typical planet is like.</li>
+    </ul>
+    <div class="splash-actions">
+      <button type="button" class="primary" id="splashGo">Show me a world</button>
+      <button type="button" class="ghost" id="splashTour">Take the 30-second tour</button>
+    </div>
+  </div>
+</div>
+
+<div id="tour" class="tour" hidden>
+  <div class="tour-ring" id="tourRing"></div>
+  <div class="tour-tip" id="tourTip" role="dialog" aria-live="polite">
+    <p id="tourText"></p>
+    <div class="tour-nav"><span id="tourCount"></span><button type="button" class="ghost" id="tourBack">Back</button><button type="button" class="primary" id="tourNext">Next</button></div>
+  </div>
+</div>
+
+<script src="js/rng.js"></script>
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/visual.js"></script>
+<script src="js/observe.js"></script>
+<script src="js/spectrum.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/surface.js"></script>
+<script src="js/ui.js"></script>
+<script src="js/main.js"></script>
+<script src="js/guide.js"></script>
+</body>
+</html>
