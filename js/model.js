@@ -1009,7 +1009,7 @@
     const root = new EXO.RNG(seed + '|' + mode);
     if (mode === 'realistic') {
       const sys = buildSystem(seed, root.fork('cand0'), mode, 0);
-      return Object.assign(sys, { seed, mode, considered: 1 });
+      return Object.assign(sys, { seed, mode, considered: 1, index: 0 });
     }
     const N = 40, cands = [];
     for (let i = 0; i < N; i++) cands.push(buildSystem(seed, root.fork('cand' + i), mode, i));
@@ -1020,7 +1020,7 @@
     const tot = w.reduce((x, y) => x + y, 0);
     let r = root.fork('select').random() * tot, chosen = 0;
     for (let i = 0; i < N; i++) { r -= w[i]; if (r <= 0) { chosen = i; break; } }
-    return Object.assign(cands[chosen], { seed, mode, considered: N, chosenScore: scores[chosen] });
+    return Object.assign(cands[chosen], { seed, mode, considered: N, chosenScore: scores[chosen], index: chosen });
   };
 
   // Build a system from explicit parameters (used by tests / sanity checks).

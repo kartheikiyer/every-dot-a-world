@@ -4,23 +4,28 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
 <title>Every Dot a World</title>
-<meta name="theme-color" content="#0d1530">
+<meta name="theme-color" content="#f2b705">
 <link rel="icon" href="favicon.ico" sizes="any">
 <link rel="icon" href="icons/icon.svg" type="image/svg+xml">
 <link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
 <link rel="manifest" href="manifest.webmanifest">
 <meta property="og:title" content="Every Dot a World">
-<meta property="og:description" content="Generate a physically consistent exoplanet: see it turn, stand on its surface, and find out which telescopes could detect it.">
+<meta property="og:description" content="A field guide to planets that could exist: generate a physically consistent exoplanet, see it turn, stand on its surface, and find out which telescopes could detect it.">
 <meta property="og:type" content="website">
 <meta name="description" content="Generate physically consistent exoplanets with rotating procedural renders, full physical properties, habitability, real-world analogues and observability with current and future telescopes.">
-<link rel="preconnect" href="https://fonts.googleapis.com">
-<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-<link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Atkinson+Hyperlegible:ital,wght@0,400;0,700;1,400&family=Bricolage+Grotesque:opsz,wght@12..96,400;12..96,600;12..96,800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="css/fonts.css">
 <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
+<body data-view="guide">
+<a class="skip" href="#textpage">Skip to the planet's guide pages</a>
+<div class="spine" aria-hidden="true"><span>Every Dot a World <i>·</i> A Field Guide to Other Worlds</span></div>
+
 <header class="topbar">
-  <a class="brand" href="./"><img src="icons/icon.svg" alt="" width="26" height="26">Every Dot a World</a>
+  <a class="brand" href="./"><img src="icons/icon.svg" alt="" width="24" height="24"><span>Every Dot a World</span></a>
+  <div class="view" role="radiogroup" aria-label="How much detail">
+    <button type="button" data-view="guide" role="radio">Field guide</button>
+    <button type="button" data-view="key" role="radio">Technical key</button>
+  </div>
   <div class="controls">
     <div class="seg" role="radiogroup" aria-label="Generation mode">
       <button type="button" data-mode="interesting" role="radio">Interesting</button>
@@ -29,53 +34,68 @@
     <form id="seedForm" class="seedform" autocomplete="off">
       <label for="seedInput" class="sr">Seed</label>
       <input id="seedInput" spellcheck="false" maxlength="24" placeholder="Seed">
-      <button type="submit" class="ghost">Load seed</button>
+      <button type="submit" class="btn">Load</button>
     </form>
-    <button type="button" id="openGuide" class="ghost">Guide</button>
-    <button type="button" id="copyLink" class="ghost">Copy link</button>
-    <button type="button" id="newPlanet" class="primary">New planet</button>
+    <button type="button" id="openGuide" class="btn quiet">How to use</button>
+    <button type="button" id="copyLink" class="btn quiet">Copy link</button>
+    <button type="button" id="newPlanet" class="btn gold">New planet <kbd>N</kbd></button>
   </div>
 </header>
 
-<main class="layout">
-  <section class="viewer" aria-label="Planet view">
-    <div class="stage">
-      <canvas id="planet" aria-label="Rotating render of the generated planet"></canvas>
-      <p class="hint">Drag to orbit the camera; double-click to reset</p>
-      <p id="glfail" class="glfail" hidden>WebGL is unavailable in this browser, so the planet can't be drawn. All properties below are still computed.</p>
-    </div>
+<main class="spread">
+  <section class="platepage" aria-label="Plate">
+    <div class="platebox">
+    <figure class="plate">
+      <div class="stage">
+        <canvas id="planet" aria-label="Rotating render of the generated planet"></canvas>
+        <p id="glfail" class="glfail" hidden>WebGL is unavailable in this browser, so the planet can't be drawn. Everything on the guide pages is still computed.</p>
+      </div>
+      <figcaption><span class="capline"><b id="plateNo">Plate</b><span id="plateKind"></span></span><span class="captext">Coloured from its model: surface, clouds, haze and rings all follow from its physics. <span class="hint">Drag to turn it; double-click to reset.</span></span></figcaption>
+    </figure>
     <div class="minis">
-      <figure>
-        <canvas id="hzStrip" height="86" aria-label="Orbit relative to the habitable zone"></canvas>
-        <figcaption>Orbit vs. habitable zone (log distance)</figcaption>
+      <h2 class="minis-h">Orbit and interior</h2>
+      <figure class="hzfig">
+        <canvas id="hzStrip" height="100" aria-label="Orbit relative to the habitable zone"></canvas>
+        <figcaption>Orbit against the habitable zone (log distance)</figcaption>
       </figure>
       <figure class="xsec">
-        <canvas id="xsection" width="150" height="150" aria-label="Interior cross-section"></canvas>
+        <canvas id="xsection" width="120" height="120" aria-label="Interior cross-section"></canvas>
         <figcaption id="xsecLegend"></figcaption>
       </figure>
     </div>
+    </div>
   </section>
 
-  <section class="sheet" id="sheet" aria-live="polite"></section>
+  <article class="textpage" id="textpage" tabindex="-1">
+    <div id="ident"></div>
+    <section id="inputs" class="inputs" aria-labelledby="inputsTitle" hidden></section>
+    <div id="sheet" aria-live="polite"></div>
+  </article>
+
+  <nav class="tabs" id="tabs" aria-label="Guide pages"></nav>
 </main>
 
 <div id="toast" class="toast" role="status" hidden></div>
 
 <div id="splash" class="splash" role="dialog" aria-modal="true" aria-labelledby="splashTitle" hidden>
   <div class="splash-card">
-    <img src="icons/icon.svg" alt="" class="splash-icon" width="72" height="72">
-    <h1 id="splashTitle">Every Dot a World</h1>
-    <p class="splash-lede">Most of the stars you can see at night have planets. This site invents one at a time, using the same physics astronomers use to make sense of the 6,000-plus real exoplanets, and shows you what it would be like and whether we could ever see it.</p>
-    <ul class="splash-list">
-      <li><b>New planet</b> builds a fresh world. Every world has its own link, so you can share it or come back to it.</li>
-      <li><b>Drag the planet</b> to look around it, and scroll down for the view from its surface.</li>
-      <li><b>Why these values?</b> under each section explains the reasoning and the research behind every number.</li>
-      <li><b>Move the distance slider</b> to see which telescopes, today and in the coming decades, could detect it.</li>
-      <li><b>Interesting</b> mode favours rarer and more habitable worlds; <b>Realistic</b> shows what a typical planet is like.</li>
-    </ul>
-    <div class="splash-actions">
-      <button type="button" class="primary" id="splashGo">Show me a world</button>
-      <button type="button" class="ghost" id="splashTour">Take the 30-second tour</button>
+    <div class="splash-band"><img src="icons/icon.svg" alt="" width="40" height="40"><span>A Field Guide to Other Worlds</span></div>
+    <div class="splash-body">
+      <h1 id="splashTitle">Every Dot a World</h1>
+      <p class="splash-lede">Most of the stars you can see at night have planets. This guide invents one at a time, using the same physics astronomers use to make sense of the 6,000-plus real exoplanets, and shows you what it would be like and whether we could ever see it.</p>
+      <h2>How to use this guide</h2>
+      <ul class="splash-list">
+        <li><b>New planet</b> builds a fresh world. Every world has its own link, so you can share it or come back to it.</li>
+        <li><b>Drag the planet</b> to look around it. The tabs on the right turn to each page: the view from its surface, its star, orbit, interior, air and more.</li>
+        <li><b>Why these values?</b> on each page explains the reasoning and the research behind every number.</li>
+        <li><b>Move the distance slider</b> on the Observe page to see which telescopes, today and in the coming decades, could detect it.</li>
+        <li><b>Interesting</b> favours rarer and more habitable worlds; <b>Realistic</b> shows what a typical planet is like.</li>
+        <li><b>Technical key</b> shows every value, unit and note up front, and lets you change the model's inputs.</li>
+      </ul>
+      <div class="splash-actions">
+        <button type="button" class="btn gold" id="splashGo">Show me a world</button>
+        <button type="button" class="btn" id="splashTour">Take the 30-second tour</button>
+      </div>
     </div>
   </div>
 </div>
@@ -84,7 +104,7 @@
   <div class="tour-ring" id="tourRing"></div>
   <div class="tour-tip" id="tourTip" role="dialog" aria-live="polite">
     <p id="tourText"></p>
-    <div class="tour-nav"><span id="tourCount"></span><button type="button" class="ghost" id="tourBack">Back</button><button type="button" class="primary" id="tourNext">Next</button></div>
+    <div class="tour-nav"><span id="tourCount"></span><button type="button" class="btn" id="tourBack">Back</button><button type="button" class="btn" id="tourNext">Next</button></div>
   </div>
 </div>
 

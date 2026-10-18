@@ -20,12 +20,13 @@
   }
 
   const STEPS = [
-    { sel: '.stage', text: 'This is your planet, rendered from its physics: its colours, clouds, rings and glow all come from the model. Drag it to look around; double-click to reset.' },
-    { sel: '.hero', text: 'Its name, type and a one-line summary. The numbers underneath are the essentials: size, mass, temperature, orbit and a habitability score.' },
-    { sel: '.sec.surface', text: 'What it might look like standing on it: the sky colour comes from how this atmosphere scatters this star’s light, and the star is drawn at its true size.' },
-    { sel: 'details.why', text: 'Every section has a “Why these values?” note. Open it to see the reasoning and the papers each number comes from.' },
-    { sel: '#obsSec .distrow', text: 'Slide to move the system nearer or farther, and see which telescopes — working now or planned — could detect it.' },
-    { sel: '#specSec', text: 'A simulated spectrum: the fingerprints of its gases, and which ones JWST could actually pick out.' },
+    { sel: '.stage', text: 'This is your planet, drawn from its physics: its colours, clouds, rings and glow all come from the model. Drag it to look around; double-click to reset.' },
+    { sel: '.ident', text: 'Its name, type and a one-line summary, the five essential numbers, and its field marks: the few facts that set this world apart. Each field mark links to the page that explains it.' },
+    { sel: '.minis', text: 'Where its orbit sits against the habitable zone, and a slice through its interior.' },
+    { sel: '#tabs', text: 'Like a field guide, each tab turns to a page: the view from the surface, its star, orbit, body, air, magnetic field, habitability, similar known worlds, and whether we could observe it.' },
+    { sel: 'details.why', text: 'Every page has a “Why these values?” note. Open it to see the reasoning and the papers each number comes from.' },
+    { sel: '#sec-observe .distrow', text: 'Slide to move the system nearer or farther, and see which telescopes, working now or planned, could detect it.' },
+    { sel: '.view', text: 'Technical key shows every value, unit and note up front, and lets you edit the model\'s inputs. Field guide brings you back.' },
     { sel: '.controls', text: 'Make a new world, switch between Interesting and Realistic, or copy a link to share this exact planet. Press N for a new planet anytime.' }
   ];
   let step = 0;
@@ -36,7 +37,8 @@
     if (!el) return;
     const r = el.getBoundingClientRect();
     const pad = 8;
-    const minTop = s.sel === '.controls' ? 4 : 70; // stay below the sticky header
+    const barH = parseFloat(getComputedStyle(document.documentElement).getPropertyValue('--bar')) || 0;
+    const minTop = (s.sel === '.controls' || s.sel === '.view') ? 4 : barH + 8; // stay below the sticky header
     const top = Math.max(minTop, r.top - pad), left = Math.max(4, r.left - pad);
     const w = Math.min(window.innerWidth - left - 4, r.width + pad * 2);
     const h = Math.min(window.innerHeight - top - 4, r.height + pad * 2);
