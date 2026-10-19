@@ -94,4 +94,5 @@
 
   EXO.RNG = RNG;
   EXO.randomSeed = randomSeed;
+  EXO.hashSeed = (s) => xmur3(String(s))(); // first 32-bit state, as RNG uses it
 })(typeof window !== 'undefined' ? window : globalThis);

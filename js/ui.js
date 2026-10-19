@@ -174,7 +174,7 @@
         <div><dt>Habitability index</dt><dd>${p.habitability.index}<small>/100</small></dd></div>
       </dl>
       <div class="marks"><h2>Field marks</h2><ul>${marks.map((m) => `<li><a href="#sec-${m.page}" style="--tab:var(${INK[m.page]})"><span><span class="mb">${esc(m.b)}</span><span class="mt">${esc(m.t)}</span></span></a></li>`).join('')}</ul></div>
-      <p class="meta">Seed ${esc(sys.seed)}, ${how}.</p>
+      <p class="meta">Seed ${esc(sys.seed)}, ${how}. <a href="how-it-works.html${EXO.state.hashOf(state, false)}">Trace how this planet was built</a>.</p>
     </header>`;
     symbols(document.getElementById('ident'));
   };
@@ -450,7 +450,7 @@
     ['R21', 'Kr01', 'PM13', 'J12', 'P25', 'SM11', 'LdE08', 'K18', 'GAIA', 'LW25', 'ROMAN', 'ELT', 'ANDES', 'HWO', 'LIFE', 'ARIEL', 'RW', 'Z07'].forEach((r) => used.add(r));
     const allRefs = Object.keys(EXO.REFS).sort((a, b) => EXO.REFS[a].cite.localeCompare(EXO.REFS[b].cite));
     h.push(`${open('sources', 'refs')}${head('sources', F.sources)}
-      <p class="lede">Each planet comes from a few random initial conditions; everything else follows from published relations, in this order:</p>
+      <p class="lede">Each planet comes from a few random initial conditions; everything else follows from published relations, in this order. <a href="how-it-works.html${EXO.state.hashOf(state, false)}">See the full flowchart, traced for this planet</a>.</p>
       <ol class="pipeline">
         <li>Star: type from the local census, then mass, luminosity, radius, temperature and an XUV activity history.</li>
         <li>Orbit: period or distance from Kepler/radial-velocity occurrence rates; eccentricity and tilt.</li>

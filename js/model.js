@@ -1092,5 +1092,5 @@
     return `1/${(1 / r) < 10 ? (1 / r).toFixed(1) : Math.round(1 / r)}`;
   }
   EXO.fmt = { num: fmtNum, time: fmtTime, ratio: fmtRatio, sci };
-  EXO._internal = { rCore, rEnv, rGiant, lumMS, radiusMS, teqOf, EARTH_XUV_FLUENCE };
+  EXO._internal = { rCore, rEnv, rGiant, lumMS, radiusMS, teqOf, EARTH_XUV_FLUENCE, buildSystem, interestScore, RARITY };
 })(typeof window !== 'undefined' ? window : globalThis);

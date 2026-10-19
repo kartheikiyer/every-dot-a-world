@@ -16,55 +16,19 @@
   const sliderToLy = (v) => Math.pow(10, 2 * v / 1000);
   const lyToSlider = (ly) => Math.round(Math.log10(ly) / 2 * 1000);
 
-  // edited model inputs ride in the hash as p=s.mass:0.42,i.P:12.5
-  function parseOverrides(str) {
-    const o = { star: {}, init: {} };
-    (str || '').split(',').forEach((pair) => {
-      const m = /^([si])\.(\w+):(-?[\d.eE+-]+)$/.exec(pair.trim());
-      if (m && isFinite(+m[3])) o[m[1] === 's' ? 'star' : 'init'][m[2]] = +m[3];
-    });
-    return o;
-  }
-  function formatOverrides(o) {
-    return [...Object.entries(o.star).map(([k, v]) => `s.${k}:${+v.toPrecision(6)}`), ...Object.entries(o.init).map(([k, v]) => `i.${k}:${+v.toPrecision(6)}`)].join(',');
-  }
-  const hasOverrides = (o) => Object.keys(o.star).length + Object.keys(o.init).length > 0;
-
-  function readHash() {
-    const q = new URLSearchParams(location.hash.slice(1));
-    return {
-      seed: q.get('seed'),
-      mode: q.get('mode') === 'realistic' ? 'realistic' : 'interesting',
-      d: Math.min(100, Math.max(1, parseFloat(q.get('d')) || 10)),
-      view: q.get('view') === 'key' ? 'key' : 'guide',
-      over: parseOverrides(q.get('p'))
-    };
-  }
-  let state = readHash();
+  const ST = EXO.state;
+  const hasOverrides = ST.hasOverrides;
+  let state = ST.readHash(location.hash);
   function writeHash(push) {
-    let h = `#seed=${encodeURIComponent(state.seed)}&mode=${state.mode}&d=${+state.d.toFixed(2)}`;
-    if (state.view === 'key') h += '&view=key';
-    if (hasOverrides(state.over)) h += `&p=${formatOverrides(state.over)}`;
+    const h = ST.hashOf(state, true);
     if (push) history.pushState(null, '', h); else history.replaceState(null, '', h);
   }
 
   // ---- build the system: the seed's draw, optionally re-derived from edited inputs
   function build() {
-    base = EXO.generate(state.seed, state.mode);
-    state.custom = hasOverrides(state.over);
-    if (!state.custom) return base;
-    const s = base.star;
-    let spec;
-    if (s.isWD) spec = Object.assign({}, s);
-    else {
-      spec = { mass: s.mass, age: s.age, feh: s.feh, cls: s.cls, tMS: s.tMS };
-      Object.assign(spec, state.over.star);
-      if ('mass' in state.over.star) { delete spec.cls; spec.tMS = 10 * Math.pow(spec.mass, -2.5); }
-    }
-    spec.name = s.name;
-    const init = Object.assign({}, base.planet.init, state.over.init, { name: base.planet.name });
-    const c = EXO.customSystem(spec, init, `${state.seed}#${base.index}`);
-    return Object.assign(c, { seed: state.seed, mode: state.mode, considered: base.considered, index: base.index });
+    const r = ST.build(state.seed, state.mode, state.over);
+    base = r.base; state.custom = r.custom;
+    return r.sys;
   }
   function currentInputs() {
     const s = base.star, i = base.planet.init;
@@ -93,6 +57,7 @@
     document.title = `${sys.planet.name} – Every Dot a World`;
     $('plateNo').textContent = `Plate ${state.seed}`;
     $('plateKind').textContent = `${sys.star.spt} ${sys.star.className} host`;
+    $('howLink').href = `how-it-works.html${ST.hashOf(state, false)}`;
     if (view) {
       view.setPlanet(sys.planet.vis);
       if (opts.draw) {
@@ -253,7 +218,7 @@
     }
   });
 
-  window.addEventListener('popstate', () => { state = readHash(); load(false); });
+  window.addEventListener('popstate', () => { state = ST.readHash(location.hash); load(false); });
   window.addEventListener('keydown', (e) => {
     if (e.key === 'n' && !e.metaKey && !e.ctrlKey && !e.altKey && !/INPUT|TEXTAREA|SELECT/.test(document.activeElement.tagName)) $('newPlanet').click();
   });

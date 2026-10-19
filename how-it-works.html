@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>How it works – Every Dot a World</title>
+<meta name="theme-color" content="#f2b705">
+<link rel="icon" href="favicon.ico" sizes="any">
+<link rel="icon" href="icons/icon.svg" type="image/svg+xml">
+<link rel="apple-touch-icon" href="icons/apple-touch-icon.png">
+<link rel="manifest" href="manifest.webmanifest">
+<meta name="description" content="A flowchart of the Every Dot a World model: how a random seed becomes a star, a planet, a climate and a set of observations, traced step by step for any planet.">
+<link rel="stylesheet" href="css/fonts.css">
+<link rel="stylesheet" href="css/style.css">
+<link rel="stylesheet" href="css/flow.css">
+</head>
+<body data-view="guide" class="flowpage">
+<a class="skip" href="#steps">Skip to the steps</a>
+<div class="spine" aria-hidden="true"><span>Every Dot a World <i>·</i> How a seed becomes a world</span></div>
+
+<header class="topbar">
+  <a class="brand" href="index.html"><img src="icons/icon.svg" alt="" width="24" height="24"><span>Every Dot a World</span></a>
+  <a class="btn quiet" id="backLink" href="index.html">Back to the planet</a>
+  <div class="controls">
+    <div class="seg" role="radiogroup" aria-label="Generation mode">
+      <button type="button" data-mode="interesting" role="radio">Interesting</button>
+      <button type="button" data-mode="realistic" role="radio">Realistic</button>
+    </div>
+    <form id="traceForm" class="seedform" autocomplete="off">
+      <label for="seedInput" class="sr">Seed to trace</label>
+      <input id="seedInput" spellcheck="false" maxlength="24" placeholder="Seed">
+      <button type="submit" class="btn">Trace</button>
+    </form>
+    <button type="button" id="randomSeed" class="btn">Random seed</button>
+  </div>
+</header>
+
+<main class="spread flow">
+  <aside class="chartpage" aria-label="Flowchart of the model">
+    <nav id="chart" aria-label="Steps of the model"></nav>
+  </aside>
+  <article class="textpage" id="steps" tabindex="-1">
+    <header class="flow-intro">
+      <h1>How a seed becomes a world</h1>
+      <p class="idline">Every planet on this site starts as a short string of letters. That seed fixes every random draw the model makes, and everything after the draws follows from published physics, in the order shown in the flowchart.</p>
+      <p class="blurb">The chart traces one planet through the model. Each box shows that planet's value at that step; each section below explains what the step does, which branch the planet took, and the relations and papers behind it. Box colours match the tabs on the planet's guide pages.</p>
+      <p class="tracing" id="tracing"></p>
+    </header>
+    <div id="stages" aria-live="polite"></div>
+  </article>
+</main>
+
+<div id="toast" class="toast" role="status" hidden></div>
+
+<script src="js/rng.js"></script>
+<script src="js/data.js"></script>
+<script src="js/model.js"></script>
+<script src="js/visual.js"></script>
+<script src="js/observe.js"></script>
+<script src="js/spectrum.js"></script>
+<script src="js/renderer.js"></script>
+<script src="js/surface.js"></script>
+<script src="js/state.js"></script>
+<script src="js/flow.js"></script>
+</body>
+</html>

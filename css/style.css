@@ -73,7 +73,7 @@ button, input { font: inherit; color: inherit; }
 .view button[aria-checked="true"] { color: var(--ink); border-bottom-color: var(--ink); }
 .controls { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; margin-left: auto; }
 
-.btn { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; border: 1px solid var(--rule-strong); border-radius: 3px; background: transparent; cursor: pointer; font: 600 0.78rem/1 var(--display); letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink); white-space: nowrap; transition: border-color 0.15s, background-color 0.15s; }
+.btn { display: inline-flex; align-items: center; gap: 8px; height: 34px; padding: 0 12px; text-decoration: none; border: 1px solid var(--rule-strong); border-radius: 3px; background: transparent; cursor: pointer; font: 600 0.78rem/1 var(--display); letter-spacing: 0.09em; text-transform: uppercase; color: var(--ink); white-space: nowrap; transition: border-color 0.15s, background-color 0.15s; }
 .btn:hover { border-color: var(--ink); background: var(--white); }
 .btn:disabled { opacity: 0.45; cursor: default; }
 .btn.quiet { border-color: transparent; }
@@ -306,12 +306,15 @@ body[data-view="key"] .keyfigs dd { font-size: 1.4rem; }
 .tour-nav { display: flex; gap: 8px; align-items: center; }
 .tour-nav span { margin-right: auto; color: var(--faint); font-size: 0.9rem; }
 
-@media (max-width: 1400px) {
+@media (max-width: 1520px) {
   .brand span { display: none; }
   .topbar { gap: 18px; }
 }
-@media (max-width: 1120px) {
+@media (max-width: 1360px) {
   .btn kbd { display: none; }
+  .controls { gap: 4px; }
+}
+@media (max-width: 1120px) {
   #openGuide { display: none; }
 }
 @media (max-width: 900px) {

@@ -1,0 +1,81 @@
+/* How it works: the flowchart page. Inherits every token and component from style.css;
+   the chart takes the plate's place on the left page, steps read on the right. */
+body.flowpage .topbar { padding-right: 24px; }
+body.flowpage .spread { grid-template-columns: minmax(330px, 34%) minmax(0, 1fr); padding-right: 0; }
+
+/* ---------- left page: the chart */
+.chartpage { position: sticky; top: var(--bar); align-self: start; height: calc(100vh - var(--bar)); overflow-y: auto; padding: 22px 22px 28px 28px; border-right: 1px solid var(--rule-2); scrollbar-width: thin; }
+.flowchart, .flowchart ol { list-style: none; margin: 0; padding: 0; }
+.node { position: relative; padding-top: 12px; }
+.flowchart > .node { margin: 0 11px; }
+.flowchart > .node:first-child { padding-top: 0; }
+.node::before { content: ''; position: absolute; left: 16px; top: 0; height: 12px; border-left: 1px solid var(--ink); }
+.node::after { content: ''; position: absolute; left: 12px; top: 7px; width: 9px; height: 5px; background: var(--ink); clip-path: polygon(0 0, 100% 0, 50% 100%); }
+.flowchart > .node:first-child::before, .flowchart > .node:first-child::after { display: none; }
+.node a { display: grid; grid-template-columns: 10px minmax(0, 1fr) auto; gap: 9px; align-items: center; min-height: 32px; padding: 4px 10px; background: var(--white); border: 1px solid var(--rule-strong); border-radius: 2px; color: var(--ink); text-decoration: none; transition: border-color 0.15s; }
+.node a:hover { border-color: var(--ink); }
+.node a[aria-current="step"] { border-color: var(--ink); box-shadow: inset 0 0 0 1px var(--ink); }
+.node i { width: 10px; height: 10px; background: var(--tab); }
+.nl { font: 600 0.78rem/1.2 var(--display); letter-spacing: 0.07em; text-transform: uppercase; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+.nv { font: 700 0.78rem/1.2 var(--text); color: var(--tab); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; max-width: 12em; text-align: right; }
+.loop { position: relative; margin-top: 12px; padding: 24px 10px 10px; border: 1px dashed var(--rule-strong); }
+.loop::before { content: ''; position: absolute; left: 27px; top: -13px; height: 12px; border-left: 1px solid var(--ink); }
+.loop > ol > .node:first-child::before { top: -24px; height: 36px; }
+.loop-h { position: absolute; top: 6px; left: 40px; margin: 0; font: 700 0.78rem/1 var(--display); letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.fan { position: relative; margin: 12px 11px 0; padding-top: 30px; }
+.fan::before { content: ''; position: absolute; left: 16px; top: 0; height: 30px; border-left: 1px solid var(--ink); }
+.fan .loop-h { top: 9px; left: 30px; }
+.fan > ol { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; padding-top: 10px; border-top: 1px solid var(--ink); }
+.fan .node { padding-top: 0; }
+.fan .node::before, .fan .node::after { display: none; }
+.fan .node a { grid-template-columns: 10px minmax(0, 1fr); }
+
+/* ---------- right page: the steps */
+.flow-intro h1 { font: 800 clamp(2.4rem, 4.4vw, 4rem)/0.98 var(--display); letter-spacing: -0.02em; margin: 0 0 16px; text-wrap: balance; max-width: 16ch; }
+.flow-intro .idline { font-size: 1.22rem; line-height: 1.45; margin: 0 0 10px; max-width: 58ch; }
+.flow-intro .blurb { color: var(--muted); margin: 0; max-width: 64ch; }
+.tracing { margin: 20px 0 0; padding: 12px 16px; background: var(--white); box-shadow: inset 0 0 0 1px var(--rule); max-width: 64ch; }
+.step:first-child { margin-top: 56px; }
+.trace { margin: 16px 0 4px; }
+.trace-h { display: flex; align-items: center; gap: 10px; margin: 0 0 4px; font: 700 1rem/1.2 var(--display); }
+.trace-h::before { content: ''; width: 10px; height: 10px; background: var(--tab); }
+.trace-note { margin: 10px 0 0; color: var(--ink-2); font-size: 0.9rem; max-width: 70ch; }
+.trace .figs b { font-size: 1.22rem; white-space: normal; }
+code { font-family: inherit; font-weight: 700; font-size: 0.9em; background: var(--paper-2); padding: 1px 5px; border-radius: 2px; }
+
+.key { margin: 22px 0 6px; }
+.key-h { font: 700 1rem/1.35 var(--display); margin: 0 0 8px; max-width: 64ch; }
+.key ol { list-style: none; margin: 0; padding: 0; border-top: 1px solid var(--ink); }
+.key li { display: grid; grid-template-columns: 34px minmax(0, 1fr) minmax(0, 34%) 92px; gap: 12px; align-items: baseline; padding: 9px 8px; border-bottom: 1px solid var(--rule-2); color: var(--muted); }
+.key .kc { font: 700 0.9rem/1.3 var(--display); color: var(--tab); }
+.key .kq { font-size: 0.9rem; line-height: 1.4; }
+.key .ko { font: 600 0.9rem/1.3 var(--display); }
+.key li.taken { color: var(--ink); background: color-mix(in srgb, var(--tab) 9%, transparent); }
+.key li.taken .kq { color: var(--ink-2); }
+.kt { justify-self: end; font: 700 0.78rem/1 var(--display); letter-spacing: 0.08em; text-transform: uppercase; color: #fff; background: var(--tab); padding: 5px 7px 4px; border-radius: 2px; white-space: nowrap; }
+
+.swatches { display: flex; flex-wrap: wrap; align-items: center; gap: 6px; margin: 14px 0 4px; }
+.swatches span { width: 34px; height: 34px; box-shadow: inset 0 0 0 1px var(--rule-strong); }
+.swatches small { margin-left: 8px; color: var(--muted); font-size: 0.9rem; }
+
+table.cands { width: 100%; border-collapse: collapse; margin-top: 4px; font-size: 0.9rem; }
+table.cands th { text-align: left; font: 600 0.78rem/1.2 var(--display); letter-spacing: 0.1em; text-transform: uppercase; color: var(--muted); padding: 8px 10px 8px 0; border-bottom: 1px solid var(--ink); }
+table.cands td { padding: 7px 10px 7px 0; border-bottom: 1px solid var(--rule-2); font-variant-numeric: tabular-nums; white-space: nowrap; }
+table.cands tr.chosen td { font-weight: 700; background: color-mix(in srgb, var(--tab) 9%, transparent); }
+table.cands .kt { margin-left: 6px; }
+.pbar { display: inline-block; width: 72px; height: 8px; margin-right: 8px; background: var(--paper-2); box-shadow: inset 0 0 0 1px var(--rule); vertical-align: 0; }
+.pbar span { display: block; height: 100%; background: var(--tab); }
+.plate.mini { width: min(100%, 360px); margin: 18px 0 6px; }
+.plate.mini canvas { display: block; width: 100%; height: 100%; cursor: grab; touch-action: none; }
+
+@media (max-width: 900px) {
+  body.flowpage .topbar { padding: 10px 16px; }
+  #backLink { order: 2; margin-left: auto; }
+  body.flowpage #randomSeed { order: 6; }
+  .chartpage { position: relative; top: 0; height: auto; overflow: visible; padding: 16px; border-right: 0; border-bottom: 1px solid var(--rule-2); }
+  .key li { grid-template-columns: 30px minmax(0, 1fr); }
+  .key .ko { grid-column: 2; }
+  .key .kt { grid-column: 2; justify-self: start; }
+  .key li > span:empty { display: none; }
+}
+.plate.mini .capline b { text-transform: none; letter-spacing: 0.02em; font-size: 0.9rem; }
